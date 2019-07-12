@@ -6,13 +6,14 @@ void MyGlDraw(void)
 	//*************************************************************************
 	// Chame aqui as funções do mygl.h
 	//*************************************************************************
-	std::vector<int> cor = {255, 0, 255,1};
-	std::vector<int> cor2 = {0, 255, 255,1};
-	for(int i = 0; i < IMAGE_WIDTH/2; i++){
-	putPixel(i,0,cor);
+	srand(time(NULL));
+	std::vector<Pixel> pixels;      //Vetor de pixels
+	for(int i = 0; i < 500; i++){
+	Pixel p = {i, i, rand() % 255, rand() % 255 , rand() % 255, 0}; //Cada pixel tem cores aleatorias
+	pixels.push_back(p);
 	}
-	for(int i = IMAGE_WIDTH/2; i < IMAGE_WIDTH; i++){
-	putPixel(i,0,cor2);
+	for(int i; i < pixels.size(); i++){                             //desenha uma linha com cores aleatórias
+	putPixel(pixels[i]);
 	}
 
 }
