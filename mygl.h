@@ -3,16 +3,26 @@
 
 #include "definitions.h"
 #include <vector>
+#include <cmath>
 
 typedef struct Pixel {
 	int x;
 	int y;
-	
-	int red;
-	int green;
-	int blue;
-	int alpha;
+
+    double red;
+    double green;
+    double blue;
+    double alpha;
 	} Pixel;
+
+typedef struct Steps {
+
+    double redStep;
+    double greenStep;
+    double blueStep;
+    double alphaStep;
+
+} Steps;
 		
 
 
@@ -28,6 +38,26 @@ void putPixel(Pixel p) {
 	FBptr[endereco + 1] = p.green;
 	FBptr[endereco + 2] = p.blue;
 	FBptr[endereco + 3] = p.alpha;
+}
+
+void setarDist(Pixel inicial, Pixel final, Steps *dist){
+    int dx = final.x - inicial.x;
+    int dy = final.y - inicial.y;
+
+    double hypo = sqrt(dx*dx + dy*dy);
+
+    //Define o quanto cada cor irá incrementar/decrementar a cada pixel
+    dist->redStep = (final.red - inicial.red)/hypo;
+    dist->greenStep = (final.green - inicial.green)/hypo;
+    dist->blueStep = (final.blue - inicial.blue)/hypo;
+    dist->alphaStep = (final.alpha - inicial.alpha)/hypo;
+}
+
+void interpolar(Pixel *inicial, Steps dist){
+    inicial->red += dist.redStep;
+    inicial->green += dist.greenStep;
+    inicial->blue += dist.blueStep;
+    inicial->alpha += dist.alphaStep;
 }
 
 void drawLine(Pixel inicial, Pixel final){
@@ -48,7 +78,8 @@ void drawLine(Pixel inicial, Pixel final){
     if(yf > yi) incY = 1;
     else incY = -1;
 
-
+    Steps steps;
+    setarDist(inicial,final,&steps);
     putPixel(inicial);
     Pixel linha = {inicial.x, inicial.y, inicial.red, inicial.green, inicial.blue, inicial.alpha};  //Esse pixel é o que se moverá e pintará a linha
     if(dx == 0){
@@ -57,6 +88,7 @@ void drawLine(Pixel inicial, Pixel final){
             {
 
                 linha.y++;
+                interpolar(&linha,steps);
                 putPixel(linha);
 
             }
@@ -66,6 +98,7 @@ void drawLine(Pixel inicial, Pixel final){
             {
 
                 linha.y--;
+                interpolar(&linha,steps);
                 putPixel(linha);
 
             }
@@ -73,20 +106,22 @@ void drawLine(Pixel inicial, Pixel final){
 
     }
     else if(dy == 0){
-        if(xf > xi){    //linha pra baixo
+        if(xf > xi){    //linha pra direita
             while(linha.x != xf)
             {
 
                 linha.x++;
+                interpolar(&linha,steps);
                 putPixel(linha);
 
             }
         }
-        else{           //linha pra cima
+        else{           //linha pra esquerda
             while(linha.x != xf)
             {
 
                 linha.x--;
+                interpolar(&linha,steps);
                 putPixel(linha);
 
             }
@@ -104,7 +139,7 @@ void drawLine(Pixel inicial, Pixel final){
                     linha.y += incY;
                     controle += dx;
                 }
-
+                interpolar(&linha,steps);
                 putPixel(linha);
             }
 
@@ -118,7 +153,7 @@ void drawLine(Pixel inicial, Pixel final){
                     linha.x += incX;
                     controle += dy;
                 }
-
+                interpolar(&linha,steps);
                 putPixel(linha);
             }
 
