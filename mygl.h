@@ -32,12 +32,16 @@ typedef struct Steps {
 
 //Desenha um pixel na tela. Seus atributos são definidos no struct passado. 
 void putPixel(Pixel p) {
-	
-	int endereco = p.x*4 + p.y*4*IMAGE_WIDTH;
-	FBptr[endereco] = p.red;
-	FBptr[endereco + 1] = p.green;
-	FBptr[endereco + 2] = p.blue;
-	FBptr[endereco + 3] = p.alpha;
+	if(p.x > IMAGE_WIDTH || p.x < 0 || p.y > IMAGE_HEIGHT || p.y < 0){  //Garante que o pixel está dentro dos limites
+	    return;
+	}
+	else {
+        int endereco = p.x * 4 + p.y * 4 * IMAGE_WIDTH;
+        FBptr[endereco] = p.red;
+        FBptr[endereco + 1] = p.green;
+        FBptr[endereco + 2] = p.blue;
+        FBptr[endereco + 3] = p.alpha;
+    }
 }
 
 void setarDist(Pixel inicial, Pixel final, Steps *dist){
